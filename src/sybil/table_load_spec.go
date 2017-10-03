@@ -59,15 +59,18 @@ func (l *LoadSpec) assertColType(name string, colType int8) {
 func (l *LoadSpec) Str(name string) {
 	l.assertColType(name, STR_VAL)
 	l.columns[name] = true
+	l.files["str_"+name+".pb"] = true
 	l.files["str_"+name+".db"] = true
 }
 func (l *LoadSpec) Int(name string) {
 	l.assertColType(name, INT_VAL)
 	l.columns[name] = true
 	l.files["int_"+name+".db"] = true
+	l.files["int_"+name+".pb"] = true
 }
 func (l *LoadSpec) Set(name string) {
 	l.assertColType(name, SET_VAL)
 	l.columns[name] = true
 	l.files["set_"+name+".db"] = true
+	l.files["set_"+name+".pb"] = true
 }

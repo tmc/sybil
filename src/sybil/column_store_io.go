@@ -9,10 +9,13 @@ import "runtime/debug"
 import "time"
 import "regexp"
 
+import "github.com/DeDiS/protobuf"
+
 type ValueMap map[int64][]uint32
 
 var CARDINALITY_THRESHOLD = 4
 var DEBUG_RECORD_CONSISTENCY = false
+var PROTOBUF_ENABLED = true
 
 func deltaEncodeCol(col ValueMap) {
 	for _, records := range col {
@@ -115,11 +118,22 @@ func (tb *TableBlock) SaveIntsToColumns(dirname string, sameInts map[int16]Value
 
 		var network bytes.Buffer
 		colFname := fmt.Sprintf("%s/int_%s.db", dirname, tb.getStringForKey(k))
-		// Create an encoder and send a value.
-		enc := gob.NewEncoder(&network)
-		err := enc.Encode(intCol)
-		if err != nil {
-			Error("encode:", err)
+		if PROTOBUF_ENABLED {
+			colFname = fmt.Sprintf("%s/int_%s.pb", dirname, tb.getStringForKey(k))
+
+			buf, err := protobuf.Encode(&intCol)
+			if err != nil {
+				Error("encode:", err)
+			}
+
+			network = *bytes.NewBuffer(buf)
+		} else {
+			// Create an encoder and send a value.
+			enc := gob.NewEncoder(&network)
+			err := enc.Encode(intCol)
+			if err != nil {
+				Error("encode:", err)
+			}
 		}
 
 		action := "SERIALIZED"
