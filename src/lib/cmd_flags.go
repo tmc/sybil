@@ -30,6 +30,7 @@ type FlagDefs struct {
 	HIST_BUCKET *int
 	HDR_HIST    *bool
 	LOG_HIST    *bool
+	T_DIGEST    *bool
 
 	FIELD_SEPARATOR    *string
 	FILTER_SEPARATOR   *string
@@ -147,6 +148,7 @@ func setDefaults() {
 	FLAGS.RECYCLE_MEM = &TRUE
 	FLAGS.CACHED_QUERIES = &FALSE
 
+	FLAGS.T_DIGEST = &FALSE
 	FLAGS.HDR_HIST = &FALSE
 	FLAGS.LOG_HIST = &FALSE
 

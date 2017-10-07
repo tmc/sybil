@@ -42,6 +42,10 @@ coverage:
 	go tool cover -html=cover.out -o cover.html
 
 
+tdigest: export BUILD_FLAGS += -tags tdigest
+tdigest: bindir
+	make all
+
 hdrhist: export BUILD_FLAGS += -tags hdrhist
 hdrhist: bindir
 	make all

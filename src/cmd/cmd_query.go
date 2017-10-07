@@ -32,6 +32,10 @@ func addQueryFlags() {
 		sybil.FLAGS.HDR_HIST = flag.Bool("hdr", false, "Use HDR Histograms (can be slow)")
 	}
 
+	if sybil.ENABLE_TDIGEST {
+		sybil.FLAGS.T_DIGEST = flag.Bool("tdigest", false, "Use TDIGEST Histograms")
+	}
+
 	sybil.FLAGS.PRINT = flag.Bool("print", true, "Print some records")
 	sybil.FLAGS.SAMPLES = flag.Bool("samples", false, "Grab samples")
 	sybil.FLAGS.INT_FILTERS = flag.String("int-filter", "", "Int filters, format: col:op:val")
