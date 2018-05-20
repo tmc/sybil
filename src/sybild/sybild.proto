@@ -1,0 +1,177 @@
+syntax = "proto3";
+package pb;
+
+import "github.com/golang/protobuf/ptypes/struct/struct.proto";
+
+// Sybil
+service Sybil {
+  // Ingest inserts new data into a sybil dataset.
+  rpc Ingest (IngestRequest) returns (IngestResponse) {}
+  // Query
+  rpc Query (QueryRequest) returns (QueryResponse) {}
+  // ListTables
+  rpc ListTables (ListTablesRequest) returns (ListTablesResponse) {}
+  // GetTable
+  rpc GetTable (GetTableRequest) returns (Table) {}
+}
+
+// IngestRequest
+message IngestRequest {
+  // dataset is the name of the dataset.
+  string dataset = 1;
+
+  // records is the set of records to insert.
+  repeated google.protobuf.Struct records = 2;
+}
+
+// IngestResponse
+message IngestResponse {
+  int64 number_inserted = 1;
+}
+
+// QueryType
+enum QueryType {
+  QUERY_TYPE_UNKNOWN = 0;
+  TABLE = 1;
+  TIME_SERIES = 2;
+  DISTRIBUTION = 3;
+  SAMPLES = 4;
+}
+
+// QueryOp
+enum QueryOp {
+  QUERY_OP_UNKNOWN = 0;
+  AVERAGE = 1;
+  HISTOGRAM = 2;
+}
+
+// QueryFilterOp
+enum QueryFilterOp {
+  QUERY_FILTER_OP_UNKNOWN = 0;
+  RE = 1;
+  NRE = 2;
+  EQ = 3;
+  NEQ = 4;
+  GT = 5;
+  LT = 6;
+  IN = 7;
+  NIN = 8;
+}
+
+// QueryFilter
+message QueryFilter {
+  string column = 1;
+  QueryFilterOp op = 2;
+  string value = 3;
+}
+
+// QueryRequest
+message QueryRequest {
+  // dataset is the name of the dataset.
+  string dataset = 1;
+  QueryType type = 2;
+  int64 limit = 3;
+  repeated string ints = 4;
+  repeated string strs = 5;
+  repeated string groups = 6;
+  repeated string distinct_by = 7;
+  string sort = 8;
+  // todo: prune_(by,sort)
+
+  string time_column = 9;
+  int64 time_bucket = 10;
+
+  QueryOp op = 11;
+  bool log_histogram = 12;
+
+  repeated QueryFilter int_filters = 13;
+  repeated QueryFilter str_filters = 14;
+  repeated QueryFilter set_filters = 15;
+
+  int64 int_histogram_bucket_size = 16;
+  // todo: query cache control
+  // todo: ingestion log reading option
+}
+
+message Histogram {
+  double mean = 1;
+  int64 max = 2;
+  int64 min = 3;
+  int64 total_count = 4;
+
+  repeated int64 percentiles = 5;
+  map<string, int64> str_buckets = 6;
+  map<int64, int64> int_buckets = 7;
+
+  int64 range_start = 8;
+  int64 range_end = 9;
+  double std_deviation = 10;
+}
+
+message QueryResult {
+  map<string, Histogram> histograms = 1;
+  // todo //Distinct *hll.LogLogBeta = 2;
+
+  string GroupByKey = 3;
+  string BinaryByKey = 4;
+  int64 Count = 5;
+  int64 Samples = 6;
+}
+
+message ResultMap {
+  map<string, QueryResult> values = 1;
+}
+
+message SetField {
+  repeated string values = 1;
+}
+
+message Record {
+  int64 timestamp = 1;
+
+  map<string, string> strs = 2;
+  map<string, int64> ints = 3;
+  map<string, SetField> sets = 4;
+
+  // todo //string path = 5;
+}
+
+// QueryResults
+message QueryResults {
+  QueryResult cumulative = 1;
+  ResultMap results = 2;
+  map<int64, ResultMap> time_results = 3;
+  int64 matched_count = 4;
+  repeated QueryResult sorted = 5;
+  repeated Record  matched = 6;
+}
+
+// QueryResponse
+message QueryResponse {
+  QueryResults results = 1;
+}
+
+// ListTablesRequest
+message ListTablesRequest {
+}
+
+// ListTablesResponse
+message ListTablesResponse {
+  repeated string tables = 1;
+}
+
+// GetTableRequest
+message GetTableRequest {
+  string name = 1;
+}
+
+// Table
+message Table {
+  string name = 1;
+  repeated string str_columns = 2;
+  repeated string int_columns = 3;
+  repeated string set_columns = 4;
+  int64 count = 5;
+  int64 storage_size = 6;
+  int64 average_object_size = 7;
+}
