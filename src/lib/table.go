@@ -214,3 +214,5 @@ func (t *Table) GetColumnType(v string) int8 {
 	colId := t.getKeyId(v)
 	return t.KeyTypes[colId]
 }
+
+func (t *Table) NewMethod() {}
