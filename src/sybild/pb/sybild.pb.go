@@ -47,7 +47,7 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
-// QueryType
+// QueryType defines the types of query that can be performed.
 type QueryType int32
 
 const (
@@ -146,7 +146,7 @@ func (x QueryFilterOp) String() string {
 }
 func (QueryFilterOp) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
 
-// IngestRequest
+// IngestRequest inserts records into a sybil dataset.
 type IngestRequest struct {
 	// dataset is the name of the dataset.
 	Dataset string `protobuf:"bytes,1,opt,name=dataset" json:"dataset,omitempty"`
@@ -173,7 +173,7 @@ func (m *IngestRequest) GetRecords() []*google_protobuf.Struct {
 	return nil
 }
 
-// IngestResponse
+// IngestResponse reports the results of an ingestion request.
 type IngestResponse struct {
 	NumberInserted int64 `protobuf:"varint,1,opt,name=number_inserted,json=numberInserted" json:"number_inserted,omitempty"`
 }
@@ -785,11 +785,11 @@ const _ = grpc.SupportPackageIsVersion4
 type SybilClient interface {
 	// Ingest inserts new data into a sybil dataset.
 	Ingest(ctx context.Context, in *IngestRequest, opts ...grpc.CallOption) (*IngestResponse, error)
-	// Query
+	// Query retrieves results from sybil.
 	Query(ctx context.Context, in *QueryRequest, opts ...grpc.CallOption) (*QueryResponse, error)
-	// ListTables
+	// ListTables lists the tables in a sybil database.
 	ListTables(ctx context.Context, in *ListTablesRequest, opts ...grpc.CallOption) (*ListTablesResponse, error)
-	// GetTable
+	// GetTable gets details about a particular table.
 	GetTable(ctx context.Context, in *GetTableRequest, opts ...grpc.CallOption) (*Table, error)
 }
 
@@ -842,11 +842,11 @@ func (c *sybilClient) GetTable(ctx context.Context, in *GetTableRequest, opts ..
 type SybilServer interface {
 	// Ingest inserts new data into a sybil dataset.
 	Ingest(context.Context, *IngestRequest) (*IngestResponse, error)
-	// Query
+	// Query retrieves results from sybil.
 	Query(context.Context, *QueryRequest) (*QueryResponse, error)
-	// ListTables
+	// ListTables lists the tables in a sybil database.
 	ListTables(context.Context, *ListTablesRequest) (*ListTablesResponse, error)
-	// GetTable
+	// GetTable gets details about a particular table.
 	GetTable(context.Context, *GetTableRequest) (*Table, error)
 }
 

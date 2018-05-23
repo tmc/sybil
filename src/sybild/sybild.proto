@@ -1,21 +1,25 @@
+// sybild.proto
+//
+// This protobuf file describes the types and RPC endpoints for accessing a
+// sybil database over a network.
 syntax = "proto3";
 package pb;
 
 import "github.com/golang/protobuf/ptypes/struct/struct.proto";
 
-// Sybil
+// Sybil is an OLAP analytics store.
 service Sybil {
   // Ingest inserts new data into a sybil dataset.
   rpc Ingest (IngestRequest) returns (IngestResponse) {}
-  // Query
+  // Query retrieves results from sybil.
   rpc Query (QueryRequest) returns (QueryResponse) {}
-  // ListTables
+  // ListTables lists the tables in a sybil database.
   rpc ListTables (ListTablesRequest) returns (ListTablesResponse) {}
-  // GetTable
+  // GetTable gets details about a particular table.
   rpc GetTable (GetTableRequest) returns (Table) {}
 }
 
-// IngestRequest
+// IngestRequest inserts records into a sybil dataset.
 message IngestRequest {
   // dataset is the name of the dataset.
   string dataset = 1;
@@ -24,12 +28,12 @@ message IngestRequest {
   repeated google.protobuf.Struct records = 2;
 }
 
-// IngestResponse
+// IngestResponse reports the results of an ingestion request.
 message IngestResponse {
   int64 number_inserted = 1;
 }
 
-// QueryType
+// QueryType defines the types of query that can be performed.
 enum QueryType {
   QUERY_TYPE_UNKNOWN = 0;
   TABLE = 1;
