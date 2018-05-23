@@ -24,7 +24,7 @@ func RunIndexCmdLine() {
 
 	t := sybil.GetTable(*sybil.FLAGS.TABLE)
 
-	t.LoadRecords(nil)
+	t.LoadRecords(nil, false)
 	t.SaveTableInfo("info")
 	sybil.DELETE_BLOCKS_AFTER_QUERY = true
 	sybil.OPTS.WRITE_BLOCK_INFO = true
@@ -33,6 +33,6 @@ func RunIndexCmdLine() {
 	for _, v := range ints {
 		loadSpec.Int(v)
 	}
-	t.LoadRecords(&loadSpec)
+	t.LoadRecords(&loadSpec, false)
 	t.SaveTableInfo("info")
 }

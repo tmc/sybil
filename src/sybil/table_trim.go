@@ -10,7 +10,7 @@ type TrimSpec struct {
 // List all the blocks that should be trimmed to keep the table within it's
 // memory limits
 func (t *Table) TrimTable(trimSpec *TrimSpec) []*TableBlock {
-	t.LoadRecords(nil)
+	t.LoadRecords(nil, false)
 	Debug("TRIMMING TABLE, MEMORY LIMIT", trimSpec.MBLimit, "TIME LIMIT", trimSpec.DeleteBefore)
 
 	blocks := make([]*TableBlock, 0)

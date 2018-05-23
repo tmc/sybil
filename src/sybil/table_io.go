@@ -363,10 +363,10 @@ func (t *Table) WriteBlockCache() {
 
 }
 
-func (t *Table) LoadRecords(loadSpec *LoadSpec) int {
+func (t *Table) LoadRecords(loadSpec *LoadSpec, readRowsOnly bool) int {
 	t.LoadBlockCache()
 
-	return t.LoadAndQueryRecords(loadSpec, nil)
+	return t.LoadAndQueryRecords(loadSpec, nil, readRowsOnly)
 }
 
 func (t *Table) ChunkAndSave() {

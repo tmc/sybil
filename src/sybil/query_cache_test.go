@@ -59,7 +59,7 @@ func testCachedQueryFiles(t *testing.T, tableName string) {
 	loadSpec.LoadAllColumns = true
 
 	// test that the cached query doesnt already exist
-	nt.LoadAndQueryRecords(&loadSpec, nil)
+	nt.LoadAndQueryRecords(&loadSpec, nil, false)
 	for _, b := range nt.BlockList {
 		loaded := querySpec.LoadCachedResults(b.Name)
 		if loaded == true {
@@ -68,7 +68,7 @@ func testCachedQueryFiles(t *testing.T, tableName string) {
 	}
 
 	// test that the cached query is saved
-	nt.LoadAndQueryRecords(&loadSpec, &querySpec)
+	nt.LoadAndQueryRecords(&loadSpec, &querySpec, false)
 	for _, b := range nt.BlockList {
 		loaded := querySpec.LoadCachedResults(b.Name)
 		if loaded != true {
@@ -86,7 +86,7 @@ func testCachedQueryFiles(t *testing.T, tableName string) {
 	FLAGS.CACHED_QUERIES = NewTrueFlag()
 
 	// test that a new and slightly different query isnt cached for us
-	nt.LoadAndQueryRecords(&loadSpec, nil)
+	nt.LoadAndQueryRecords(&loadSpec, nil, false)
 	querySpec.Aggregations = append(aggs, nt.Aggregation("id", "hist"))
 	for _, b := range nt.BlockList {
 		loaded := querySpec.LoadCachedResults(b.Name)
@@ -110,7 +110,7 @@ func testCachedQueryConsistency(t *testing.T, tableName string) {
 	loadSpec := NewLoadSpec()
 	loadSpec.LoadAllColumns = true
 
-	nt.LoadAndQueryRecords(&loadSpec, &querySpec)
+	nt.LoadAndQueryRecords(&loadSpec, &querySpec, false)
 	copySpec := CopyQuerySpec(&querySpec)
 
 	nt = GetTable(tableName)
@@ -119,7 +119,7 @@ func testCachedQueryConsistency(t *testing.T, tableName string) {
 	// at the cached query results
 
 	copySpec.Results = make(ResultMap, 0)
-	nt.LoadAndQueryRecords(&loadSpec, copySpec)
+	nt.LoadAndQueryRecords(&loadSpec, copySpec, false)
 
 	if len(querySpec.Results) == 0 {
 		t.Error("No Results for Query")
@@ -176,7 +176,7 @@ func testCachedBasicHist(t *testing.T, tableName string) {
 		loadSpec := NewLoadSpec()
 		loadSpec.LoadAllColumns = true
 
-		nt.LoadAndQueryRecords(&loadSpec, &querySpec)
+		nt.LoadAndQueryRecords(&loadSpec, &querySpec, false)
 		copySpec := CopyQuerySpec(&querySpec)
 
 		nt = GetTable(tableName)
@@ -185,7 +185,7 @@ func testCachedBasicHist(t *testing.T, tableName string) {
 		// at the cached query results
 
 		copySpec.Results = make(ResultMap, 0)
-		nt.LoadAndQueryRecords(&loadSpec, copySpec)
+		nt.LoadAndQueryRecords(&loadSpec, copySpec, false)
 
 		if len(querySpec.Results) == 0 {
 			t.Error("No Results for Query")

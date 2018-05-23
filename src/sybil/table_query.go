@@ -11,13 +11,13 @@ import "io/ioutil"
 import "runtime"
 import "runtime/debug"
 
-func (t *Table) LoadAndQueryRecords(loadSpec *LoadSpec, querySpec *QuerySpec) int {
+func (t *Table) LoadAndQueryRecords(loadSpec *LoadSpec, querySpec *QuerySpec, readRowsOnly bool) int {
 	waystart := time.Now()
 	Debug("LOADING", *FLAGS.DIR, t.Name)
 
 	files, _ := ioutil.ReadDir(path.Join(*FLAGS.DIR, t.Name))
 
-	if READ_ROWS_ONLY {
+	if readRowsOnly {
 		Debug("ONLY READING RECORDS FROM ROW STORE")
 		files = nil
 	}

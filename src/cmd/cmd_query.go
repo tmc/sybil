@@ -133,7 +133,7 @@ func RunQueryCmdLine() {
 	// LOAD TABLE INFOS BEFORE WE CREATE OUR FILTERS, SO WE CAN CREATE FILTERS ON
 	// THE RIGHT COLUMN ID
 	t.LoadTableInfo()
-	t.LoadRecords(nil)
+	t.LoadRecords(nil, false)
 
 	count := 0
 	for _, block := range t.BlockList {
@@ -249,7 +249,7 @@ func RunQueryCmdLine() {
 		loadSpec := t.NewLoadSpec()
 		loadSpec.LoadAllColumns = true
 
-		t.LoadAndQueryRecords(&loadSpec, &querySpec)
+		t.LoadAndQueryRecords(&loadSpec, &querySpec, false)
 
 		t.PrintSamples()
 
@@ -272,7 +272,7 @@ func RunQueryCmdLine() {
 		start := time.Now()
 		// We can load and query at the same time
 		if *sybil.FLAGS.LOAD_AND_QUERY {
-			count = t.LoadAndQueryRecords(&loadSpec, &querySpec)
+			count = t.LoadAndQueryRecords(&loadSpec, &querySpec, false)
 
 			end := time.Now()
 			sybil.Debug("LOAD AND QUERY RECORDS TOOK", end.Sub(start))
@@ -289,7 +289,7 @@ func RunQueryCmdLine() {
 		t := sybil.GetTable(table)
 		sybil.FLAGS.LOAD_AND_QUERY = sybil.NewFalseFlag()
 
-		t.LoadRecords(nil)
+		t.LoadRecords(nil, false)
 		t.PrintColInfo()
 	}
 

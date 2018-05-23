@@ -64,7 +64,7 @@ func TestOpenCompressedInfoDB(t *testing.T) {
 		t.Error("COULDNT LOAD ZIPPED TABLE INFO!")
 	}
 
-	nt.LoadRecords(&loadSpec)
+	nt.LoadRecords(&loadSpec, false)
 
 	var records = make([]*Record, 0)
 	for _, b := range nt.BlockList {
@@ -95,7 +95,7 @@ func TestOpenCompressedColumn(t *testing.T) {
 
 	nt := saveAndReloadTable(t, tableName, blockCount)
 	nt.DigestRecords()
-	nt.LoadRecords(nil)
+	nt.LoadRecords(nil, false)
 
 	blocks := nt.BlockList
 
@@ -144,7 +144,7 @@ func TestOpenCompressedColumn(t *testing.T) {
 		t.Error("COULDNT LOAD ZIPPED TABLE INFO!")
 	}
 
-	bt.LoadRecords(&loadSpec)
+	bt.LoadRecords(&loadSpec, false)
 
 	var records = make([]*Record, 0)
 	for _, b := range bt.BlockList {

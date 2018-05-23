@@ -40,7 +40,7 @@ func TestTableCreate(t *testing.T) {
 	loadSpec := nt.NewLoadSpec()
 	loadSpec.LoadAllColumns = true
 
-	nt.LoadRecords(&loadSpec)
+	nt.LoadRecords(&loadSpec, false)
 
 	var records = make([]*Record, 0)
 	for _, b := range nt.BlockList {
