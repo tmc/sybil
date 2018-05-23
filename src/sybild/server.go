@@ -1,8 +1,9 @@
 package sybild
 
 import (
-	"context"
 	"fmt"
+
+	context "golang.org/x/net/context"
 
 	"github.com/logv/sybil/src/sybild/pb"
 )
