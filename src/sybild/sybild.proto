@@ -1,7 +1,7 @@
 // sybild.proto
 //
-// This protobuf file describes the types and RPC endpoints for accessing a
-// sybil database over a network.
+// This protocol buffer file describes the types and RPC endpoints for
+// accessing a sybil database over a network.
 syntax = "proto3";
 package pb;
 
@@ -17,6 +17,9 @@ service Sybil {
   rpc ListTables (ListTablesRequest) returns (ListTablesResponse) {}
   // GetTable gets details about a particular table.
   rpc GetTable (GetTableRequest) returns (Table) {}
+
+  // todo //rpc Expire
+  // todo //rpc Trim
 }
 
 // IngestRequest inserts records into a sybil dataset.
@@ -97,6 +100,7 @@ message QueryRequest {
   // todo: ingestion log reading option
 }
 
+// Histogram
 message Histogram {
   double mean = 1;
   int64 max = 2;
@@ -104,40 +108,40 @@ message Histogram {
   int64 total_count = 4;
 
   repeated int64 percentiles = 5;
-  map<string, int64> str_buckets = 6;
-  map<int64, int64> int_buckets = 7;
+  map<int64, int64> int_buckets = 6;
 
-  int64 range_start = 8;
-  int64 range_end = 9;
-  double std_deviation = 10;
+  int64 range_start = 7;
+  int64 range_end = 8;
+  double std_deviation = 9;
 }
 
+// QueryResult
 message QueryResult {
   map<string, Histogram> histograms = 1;
   // todo //Distinct *hll.LogLogBeta = 2;
 
   string GroupByKey = 3;
-  string BinaryByKey = 4;
-  int64 Count = 5;
-  int64 Samples = 6;
+  int64 Count = 4;
+  int64 Samples = 5;
 }
 
+// ResultMap
 message ResultMap {
   map<string, QueryResult> values = 1;
 }
 
+// SetField
 message SetField {
   repeated string values = 1;
 }
 
+// Record
 message Record {
-  int64 timestamp = 1;
+  map<string, string> strs = 1;
+  map<string, int64> ints = 2;
+  map<string, SetField> sets = 3;
 
-  map<string, string> strs = 2;
-  map<string, int64> ints = 3;
-  map<string, SetField> sets = 4;
-
-  // todo //string path = 5;
+  // todo //string path = 4;
 }
 
 // QueryResults
