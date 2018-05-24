@@ -94,9 +94,23 @@ message QueryRequest {
   repeated QueryFilter str_filters = 14; // filters on string columns.
   repeated QueryFilter set_filters = 15; // filters on set columns.
 
-  int64 int_histogram_bucket_size = 16;
+  HistogramOptions histogram_options = 16;
+
   bool read_ingestion_log = 17;
   // todo: query cache control?
+}
+
+// HistogramType describes the type of histogram.
+enum HistogramType {
+  HISTOGRAM_TYPE_UNKNOWN = 0;
+  NORMAL_HISTOGRAM = 1;
+  LOG_HISTOGRAM = 2;
+}
+
+// HistogramOptions
+message HistogramOptions {
+  HistogramType type = 1
+  int64 bucket_size = 2;
 }
 
 // QueryResult is the type of the query result.
