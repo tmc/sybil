@@ -176,7 +176,9 @@ func (HistogramType) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, 
 
 // IngestRequest inserts records into a sybil dataset.
 type IngestRequest struct {
-	Dataset string                    `protobuf:"bytes,1,opt,name=dataset" json:"dataset,omitempty"`
+	// Dataset is the name of the dataset.
+	Dataset string `protobuf:"bytes,1,opt,name=dataset" json:"dataset,omitempty"`
+	// Records is the set of records to insert.
 	Records []*google_protobuf.Struct `protobuf:"bytes,2,rep,name=records" json:"records,omitempty"`
 }
 
@@ -201,6 +203,7 @@ func (m *IngestRequest) GetRecords() []*google_protobuf.Struct {
 
 // IngestResponse reports the results of an ingestion request.
 type IngestResponse struct {
+	// The numer of inserted records.
 	NumberInserted int64 `protobuf:"varint,1,opt,name=number_inserted,json=numberInserted" json:"number_inserted,omitempty"`
 }
 
@@ -251,23 +254,39 @@ func (m *QueryFilter) GetValue() string {
 
 // QueryRequest describes a query.
 type QueryRequest struct {
-	Dataset          string            `protobuf:"bytes,1,opt,name=dataset" json:"dataset,omitempty"`
-	Type             QueryType         `protobuf:"varint,2,opt,name=type,enum=pb.QueryType" json:"type,omitempty"`
-	Limit            int64             `protobuf:"varint,3,opt,name=limit" json:"limit,omitempty"`
-	Ints             []string          `protobuf:"bytes,4,rep,name=ints" json:"ints,omitempty"`
-	Strs             []string          `protobuf:"bytes,5,rep,name=strs" json:"strs,omitempty"`
-	GroupBy          []string          `protobuf:"bytes,6,rep,name=group_by,json=groupBy" json:"group_by,omitempty"`
-	DistinctBy       []string          `protobuf:"bytes,7,rep,name=distinct_by,json=distinctBy" json:"distinct_by,omitempty"`
-	SortBy           string            `protobuf:"bytes,8,opt,name=sort_by,json=sortBy" json:"sort_by,omitempty"`
-	TimeColumn       string            `protobuf:"bytes,9,opt,name=time_column,json=timeColumn" json:"time_column,omitempty"`
-	TimeBucket       int64             `protobuf:"varint,10,opt,name=time_bucket,json=timeBucket" json:"time_bucket,omitempty"`
-	WeightColumn     string            `protobuf:"bytes,11,opt,name=weight_column,json=weightColumn" json:"weight_column,omitempty"`
-	Op               QueryOp           `protobuf:"varint,12,opt,name=op,enum=pb.QueryOp" json:"op,omitempty"`
-	IntFilters       []*QueryFilter    `protobuf:"bytes,13,rep,name=int_filters,json=intFilters" json:"int_filters,omitempty"`
-	StrFilters       []*QueryFilter    `protobuf:"bytes,14,rep,name=str_filters,json=strFilters" json:"str_filters,omitempty"`
-	SetFilters       []*QueryFilter    `protobuf:"bytes,15,rep,name=set_filters,json=setFilters" json:"set_filters,omitempty"`
+	// Dataset is the name of the dataset.
+	Dataset string `protobuf:"bytes,1,opt,name=dataset" json:"dataset,omitempty"`
+	// The type of the query.
+	Type QueryType `protobuf:"varint,2,opt,name=type,enum=pb.QueryType" json:"type,omitempty"`
+	// Limit number of results.
+	Limit int64 `protobuf:"varint,3,opt,name=limit" json:"limit,omitempty"`
+	// The integer fields to aggregate.
+	Ints []string `protobuf:"bytes,4,rep,name=ints" json:"ints,omitempty"`
+	// The string fields to aggregate.
+	Strs []string `protobuf:"bytes,5,rep,name=strs" json:"strs,omitempty"`
+	// The fields to group by.
+	GroupBy    []string `protobuf:"bytes,6,rep,name=group_by,json=groupBy" json:"group_by,omitempty"`
+	DistinctBy []string `protobuf:"bytes,7,rep,name=distinct_by,json=distinctBy" json:"distinct_by,omitempty"`
+	// Field to sort by.
+	SortBy string `protobuf:"bytes,8,opt,name=sort_by,json=sortBy" json:"sort_by,omitempty"`
+	// Column to consider as the time column.
+	TimeColumn string `protobuf:"bytes,9,opt,name=time_column,json=timeColumn" json:"time_column,omitempty"`
+	// Time bucket size in seconds.
+	TimeBucket int64 `protobuf:"varint,10,opt,name=time_bucket,json=timeBucket" json:"time_bucket,omitempty"`
+	// The column to interpret as the weight.
+	WeightColumn string `protobuf:"bytes,11,opt,name=weight_column,json=weightColumn" json:"weight_column,omitempty"`
+	// The operation to run.
+	Op QueryOp `protobuf:"varint,12,opt,name=op,enum=pb.QueryOp" json:"op,omitempty"`
+	// Filters on int columns.
+	IntFilters []*QueryFilter `protobuf:"bytes,13,rep,name=int_filters,json=intFilters" json:"int_filters,omitempty"`
+	// Filters on string columns.
+	StrFilters []*QueryFilter `protobuf:"bytes,14,rep,name=str_filters,json=strFilters" json:"str_filters,omitempty"`
+	// Filters on set columns.
+	SetFilters []*QueryFilter `protobuf:"bytes,15,rep,name=set_filters,json=setFilters" json:"set_filters,omitempty"`
+	// If type is DISTRIBUTION then this field controls hisogram options.
 	HistogramOptions *HistogramOptions `protobuf:"bytes,16,opt,name=histogram_options,json=histogramOptions" json:"histogram_options,omitempty"`
-	ReadIngestionLog bool              `protobuf:"varint,17,opt,name=read_ingestion_log,json=readIngestionLog" json:"read_ingestion_log,omitempty"`
+	// If true, the ingestion log is also read to produce results.
+	ReadIngestionLog bool `protobuf:"varint,17,opt,name=read_ingestion_log,json=readIngestionLog" json:"read_ingestion_log,omitempty"`
 }
 
 func (m *QueryRequest) Reset()                    { *m = QueryRequest{} }
@@ -800,11 +819,15 @@ func (m *Table) GetAverageObjectSize() int64 {
 
 // TrimRequest queries and optionally removes data from a dataset.
 type TrimRequest struct {
-	Dataset     string `protobuf:"bytes,1,opt,name=dataset" json:"dataset,omitempty"`
-	TimeColumn  string `protobuf:"bytes,2,opt,name=time_column,json=timeColumn" json:"time_column,omitempty"`
-	SizeLimitMb int64  `protobuf:"varint,3,opt,name=size_limit_mb,json=sizeLimitMb" json:"size_limit_mb,omitempty"`
-	TimeLimit   int64  `protobuf:"varint,4,opt,name=time_limit,json=timeLimit" json:"time_limit,omitempty"`
-	Delete      bool   `protobuf:"varint,5,opt,name=delete" json:"delete,omitempty"`
+	// The name of the dataset.
+	Dataset string `protobuf:"bytes,1,opt,name=dataset" json:"dataset,omitempty"`
+	// The column to interpret as the time column.
+	TimeColumn string `protobuf:"bytes,2,opt,name=time_column,json=timeColumn" json:"time_column,omitempty"`
+	// Limit, in megabytes, for the dataset.
+	SizeLimitMb int64 `protobuf:"varint,3,opt,name=size_limit_mb,json=sizeLimitMb" json:"size_limit_mb,omitempty"`
+	// Limit, in the form a timestamp for the dataset.
+	TimeLimit int64 `protobuf:"varint,4,opt,name=time_limit,json=timeLimit" json:"time_limit,omitempty"`
+	Delete    bool  `protobuf:"varint,5,opt,name=delete" json:"delete,omitempty"`
 }
 
 func (m *TrimRequest) Reset()                    { *m = TrimRequest{} }
@@ -849,8 +872,10 @@ func (m *TrimRequest) GetDelete() bool {
 
 // TrimResponse returns the number of blocks matched by the provided thresholds.
 type TrimResponse struct {
+	// The number of blocks that matched the trim request.
 	MatchedBlocks int64 `protobuf:"varint,1,opt,name=matched_blocks,json=matchedBlocks" json:"matched_blocks,omitempty"`
-	TrimmedAt     int64 `protobuf:"varint,2,opt,name=trimmed_at,json=trimmedAt" json:"trimmed_at,omitempty"`
+	// Data older than this timestamp matched the trim request. If this doesn't match the provided 'time_limit' then the 'size_limit_mb' field threshold was lower than the 'time_limit' threshold.
+	TrimmedAt int64 `protobuf:"varint,2,opt,name=trimmed_at,json=trimmedAt" json:"trimmed_at,omitempty"`
 }
 
 func (m *TrimResponse) Reset()                    { *m = TrimResponse{} }

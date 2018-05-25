@@ -23,13 +23,16 @@ service Sybil {
 
 // IngestRequest inserts records into a sybil dataset.
 message IngestRequest {
-  string dataset = 1; // dataset is the name of the dataset.
-  repeated google.protobuf.Struct records = 2; // records is the set of records to insert.
+  // Dataset is the name of the dataset.
+  string dataset = 1;
+  // Records is the set of records to insert.
+  repeated google.protobuf.Struct records = 2;
 }
 
 // IngestResponse reports the results of an ingestion request.
 message IngestResponse {
-  int64 number_inserted = 1; // the numer of inserted records.
+  // The numer of inserted records.
+  int64 number_inserted = 1;
 }
 
 // QueryType defines the types of query that can be performed.
@@ -70,31 +73,47 @@ message QueryFilter {
 
 // QueryRequest describes a query.
 message QueryRequest {
-  string dataset = 1; // dataset is the name of the dataset.
-  QueryType type = 2; // the type of the query.
-  int64 limit = 3; // limit number of results.
-  repeated string ints = 4; // the integer fields to aggregate.
-  repeated string strs = 5; // the string fields to aggregate.
-  repeated string group_by = 6; // the fields to group by.
+  // Dataset is the name of the dataset.
+  string dataset = 1;
+  // The type of the query.
+  QueryType type = 2;
+  // Limit number of results.
+  int64 limit = 3;
+  // The integer fields to aggregate.
+  repeated string ints = 4;
+  // The string fields to aggregate.
+  repeated string strs = 5;
+  // The fields to group by.
+  repeated string group_by = 6;
   repeated string distinct_by = 7;
-  string sort_by = 8; // field to sort by.
-  // todo: prune_by
+  // Field to sort by.
+  string sort_by = 8;
+  // Todo: prune_by
 
-  string time_column = 9; // column to consider as the time column.
-  int64 time_bucket = 10; // time bucket size in seconds.
+  // Column to consider as the time column.
+  string time_column = 9;
+  // Time bucket size in seconds.
+  int64 time_bucket = 10;
 
-  string weight_column = 11; // the column to interpret as the weight.
+  // The column to interpret as the weight.
+  string weight_column = 11;
 
-  QueryOp op = 12; // the operation to run.
+  // The operation to run.
+  QueryOp op = 12;
 
-  repeated QueryFilter int_filters = 13; // filters on int columns.
-  repeated QueryFilter str_filters = 14; // filters on string columns.
-  repeated QueryFilter set_filters = 15; // filters on set columns.
+  // Filters on int columns.
+  repeated QueryFilter int_filters = 13;
+  // Filters on string columns.
+  repeated QueryFilter str_filters = 14;
+  // Filters on set columns.
+  repeated QueryFilter set_filters = 15;
 
-  HistogramOptions histogram_options = 16; // if type is DISTRIBUTION then this field controls hisogram options.
+  // If type is DISTRIBUTION then this field controls hisogram options.
+  HistogramOptions histogram_options = 16;
 
-  bool read_ingestion_log = 17; // if true, the ingestion log is also read to produce results.
-  // todo: query cache control?
+  // If true, the ingestion log is also read to produce results.
+  bool read_ingestion_log = 17;
+  // Todo: query cache control?
 }
 
 // HistogramType describes the type of histogram.
@@ -194,15 +213,21 @@ message Table {
 
 // TrimRequest queries and optionally removes data from a dataset.
 message TrimRequest {
-  string dataset = 1; // the name of the dataset.
-  string time_column = 2; // the column to interpret as the time column.
-  int64 size_limit_mb = 3; // limit, in megabytes, for the dataset.
-  int64 time_limit = 4; // limit, in the form a timestamp for the dataset.
+  // The name of the dataset.
+  string dataset = 1;
+  // The column to interpret as the time column.
+  string time_column = 2;
+  // Limit, in megabytes, for the dataset.
+  int64 size_limit_mb = 3;
+  // Limit, in the form a timestamp for the dataset.
+  int64 time_limit = 4;
   bool delete = 5; // if supplied, actually remove matching blocks.
 }
 
 // TrimResponse returns the number of blocks matched by the provided thresholds.
 message TrimResponse {
-  int64 matched_blocks = 1; // the number of blocks that matched the trim request.
-  int64 trimmed_at = 2; // data older than this timestamp matched the trim request. If this doesn't match the provided 'time_limit' then the 'size_limit_mb' field threshold was lower than the 'time_limit' threshold.
+  // The number of blocks that matched the trim request.
+  int64 matched_blocks = 1;
+  // Data older than this timestamp matched the trim request. If this doesn't match the provided 'time_limit' then the 'size_limit_mb' field threshold was lower than the 'time_limit' threshold.
+  int64 trimmed_at = 2;
 }
