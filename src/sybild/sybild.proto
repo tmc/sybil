@@ -23,15 +23,13 @@ service Sybil {
 
 // IngestRequest inserts records into a sybil dataset.
 message IngestRequest {
-  // dataset is the name of the dataset.
-  string dataset = 1;
-  // records is the set of records to insert.
-  repeated google.protobuf.Struct records = 2;
+  string dataset = 1; // dataset is the name of the dataset.
+  repeated google.protobuf.Struct records = 2; // records is the set of records to insert.
 }
 
 // IngestResponse reports the results of an ingestion request.
 message IngestResponse {
-  int64 number_inserted = 1;
+  int64 number_inserted = 1; // the numer of inserted records.
 }
 
 // QueryType defines the types of query that can be performed.
@@ -75,8 +73,8 @@ message QueryRequest {
   string dataset = 1; // dataset is the name of the dataset.
   QueryType type = 2; // the type of the query.
   int64 limit = 3; // limit number of results.
-  repeated string ints = 4;
-  repeated string strs = 5;
+  repeated string ints = 4; // the integer fields to aggregate.
+  repeated string strs = 5; // the string fields to aggregate.
   repeated string group_by = 6; // the fields to group by.
   repeated string distinct_by = 7;
   string sort_by = 8; // field to sort by.
@@ -85,7 +83,7 @@ message QueryRequest {
   string time_column = 9; // column to consider as the time column.
   int64 time_bucket = 10; // time bucket size in seconds.
 
-  string weight_column = 11; // the column to interpret as the weight (for sampling).
+  string weight_column = 11; // the column to interpret as the weight.
 
   QueryOp op = 12; // the operation to run.
 
@@ -93,7 +91,7 @@ message QueryRequest {
   repeated QueryFilter str_filters = 14; // filters on string columns.
   repeated QueryFilter set_filters = 15; // filters on set columns.
 
-  HistogramOptions histogram_options = 16; // if type is HISTOGRAM then this field controls hisogram options.
+  HistogramOptions histogram_options = 16; // if type is DISTRIBUTION then this field controls hisogram options.
 
   bool read_ingestion_log = 17; // if true, the ingestion log is also read to produce results.
   // todo: query cache control?
@@ -196,14 +194,15 @@ message Table {
 
 // TrimRequest queries and optionally removes data from a dataset.
 message TrimRequest {
-  string dataset = 1;
-  string time_column = 2;
-  int64 megabyte_limit = 3;
-  int64 time_limit = 4;
+  string dataset = 1; // the name of the dataset.
+  string time_column = 2; // the column to interpret as the time column.
+  int64 size_limit_mb = 3; // limit, in megabytes, for the dataset.
+  int64 time_limit = 4; // limit, in the form a timestamp for the dataset.
   bool delete = 5; // if supplied, actually remove matching blocks.
 }
 
 // TrimResponse returns the number of blocks matched by the provided thresholds.
 message TrimResponse {
-  int64 matched_blocks = 1;
+  int64 matched_blocks = 1; // the number of blocks that matched the trim request.
+  int64 trimmed_at = 2; // data older than this timestamp matched the trim request. If this doesn't match the provided 'time_limit' then the 'size_limit_mb' field threshold was lower than the 'time_limit' threshold.
 }
