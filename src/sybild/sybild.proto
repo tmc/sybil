@@ -1,7 +1,6 @@
 // sybild.proto
 //
-// This protocol buffer file describes the types and RPC endpoints for
-// accessing a sybil database over a network.
+// This protocol buffer file describes the types and RPC endpoints for accessing a sybil database.
 syntax = "proto3";
 package pb;
 
@@ -113,6 +112,7 @@ message QueryRequest {
 
   // If true, the ingestion log is also read to produce results.
   bool read_ingestion_log = 17;
+
   // Todo: query cache control?
 }
 
@@ -202,13 +202,20 @@ message GetTableRequest {
 
 // Table (aka dataset) is a collection of records in a sybil database.
 message Table {
+  // the name of the dataset.
   string name = 1;
+  // the set of string column names.
   repeated string str_columns = 2;
+  // the set of integer column names.
   repeated string int_columns = 3;
+  // the set of set column names.
   repeated string set_columns = 4;
+  // the approximate count of samples.
   int64 count = 5;
+  // the approximate size in terms of disk utilization.
   int64 storage_size = 6;
-  int64 average_object_size = 7;
+  // the mean sample storage size.
+  double average_object_size = 7;
 }
 
 // TrimRequest queries and optionally removes data from a dataset.
