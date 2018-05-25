@@ -48,7 +48,6 @@ enum QueryOp {
   QUERY_OP_UNKNOWN = 0;
   AVERAGE = 1;
   HISTOGRAM = 2;
-  LOG_HISTOGRAM = 3;
 }
 
 // QueryFilterOp is the operation to apply to a column as part of a QueryFilter.
@@ -94,9 +93,9 @@ message QueryRequest {
   repeated QueryFilter str_filters = 14; // filters on string columns.
   repeated QueryFilter set_filters = 15; // filters on set columns.
 
-  HistogramOptions histogram_options = 16;
+  HistogramOptions histogram_options = 16; // if type is HISTOGRAM then this field controls hisogram options.
 
-  bool read_ingestion_log = 17;
+  bool read_ingestion_log = 17; // if true, the ingestion log is also read to produce results.
   // todo: query cache control?
 }
 
@@ -109,7 +108,7 @@ enum HistogramType {
 
 // HistogramOptions
 message HistogramOptions {
-  HistogramType type = 1
+  HistogramType type = 1;
   int64 bucket_size = 2;
 }
 
@@ -162,29 +161,29 @@ message QueryResults {
   map<int64, ResultMap> time_results = 3;
   int64 matched_count = 4;
   repeated QueryResult sorted = 5;
-  repeated Record  matched = 6;
+  repeated Record matched = 6;
 }
 
-// QueryResponse
+// QueryResponse is the response type for a query.
 message QueryResponse {
   QueryResults results = 1;
 }
 
-// ListTablesRequest
+// ListTablesRequest requests the list of tables from sybil.
 message ListTablesRequest {
 }
 
-// ListTablesResponse
+// ListTablesResponse contains the list of tables in sybil.
 message ListTablesResponse {
   repeated string tables = 1;
 }
 
-// GetTableRequest
+// GetTableRequest requests details about a table.
 message GetTableRequest {
   string name = 1;
 }
 
-// Table
+// Table (aka dataset) is a collection of records in a sybil database.
 message Table {
   string name = 1;
   repeated string str_columns = 2;
