@@ -1,13 +1,16 @@
 package sybil
 
-import "encoding/gob"
-import "crypto/md5"
-import "bytes"
-import "fmt"
-import "path"
-import "io/ioutil"
-import "os"
-import "compress/gzip"
+import (
+	"bytes"
+	"compress/gzip"
+	"crypto/md5"
+	"encoding/gob"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"path"
+)
 
 func init() {
 	registerTypesForQueryCache()
@@ -142,16 +145,9 @@ func (qs *QuerySpec) GetCacheStruct(blockname string) QueryParams {
 func (qs *QuerySpec) GetCacheKey(blockname string) string {
 	cacheSpec := qs.GetCacheStruct(blockname)
 
-	var buf bytes.Buffer
-	enc := gob.NewEncoder(&buf)
-	err := enc.Encode(cacheSpec)
-	if err != nil {
-		Warn("encode:", err)
-		return ""
-	}
-
+	buf, _ := json.Marshal(cacheSpec)
 	h := md5.New()
-	h.Write(buf.Bytes())
+	h.Write(buf)
 
 	ret := fmt.Sprintf("%x", h.Sum(nil))
 	return ret
