@@ -43,7 +43,7 @@ func testIntLt(t *testing.T, tableName string) {
 	filters = append(filters, nt.IntFilter("age", "lt", 20))
 
 	aggs := []Aggregation{}
-	aggs = append(aggs, nt.Aggregation("age", "avg"))
+	aggs = append(aggs, nt.Aggregation(HistogramTypeBasic, "age", "avg"))
 
 	querySpec := QuerySpec{QueryParams: QueryParams{Filters: filters, Aggregations: aggs}}
 
@@ -69,7 +69,7 @@ func testIntGt(t *testing.T, tableName string) {
 	filters = append(filters, nt.IntFilter("age", "gt", 20))
 
 	aggs := []Aggregation{}
-	aggs = append(aggs, nt.Aggregation("age", "avg"))
+	aggs = append(aggs, nt.Aggregation(HistogramTypeBasic, "age", "avg"))
 
 	querySpec := QuerySpec{QueryParams: QueryParams{Filters: filters, Aggregations: aggs}}
 
@@ -95,7 +95,7 @@ func testIntNeq(t *testing.T, tableName string) {
 	filters = append(filters, nt.IntFilter("age", "neq", 20))
 
 	aggs := []Aggregation{}
-	aggs = append(aggs, nt.Aggregation("age", "avg"))
+	aggs = append(aggs, nt.Aggregation(HistogramTypeBasic, "age", "avg"))
 
 	groupings := []Grouping{}
 	groupings = append(groupings, nt.Grouping("age"))
@@ -129,7 +129,7 @@ func testIntEq(t *testing.T, tableName string) {
 	filters = append(filters, nt.IntFilter("age", "eq", 20))
 
 	aggs := []Aggregation{}
-	aggs = append(aggs, nt.Aggregation("age", "avg"))
+	aggs = append(aggs, nt.Aggregation(HistogramTypeBasic, "age", "avg"))
 
 	querySpec := QuerySpec{QueryParams: QueryParams{Filters: filters, Aggregations: aggs}}
 
@@ -155,7 +155,7 @@ func testStrEq(t *testing.T, tableName string) {
 	filters = append(filters, nt.StrFilter("age_str", "re", "20"))
 
 	aggs := []Aggregation{}
-	aggs = append(aggs, nt.Aggregation("age", "avg"))
+	aggs = append(aggs, nt.Aggregation(HistogramTypeBasic, "age", "avg"))
 
 	groupings := []Grouping{}
 	groupings = append(groupings, nt.Grouping("age"))
@@ -186,7 +186,7 @@ func testStrNeq(t *testing.T, tableName string) {
 	filters = append(filters, nt.StrFilter("age_str", "nre", "20"))
 
 	aggs := []Aggregation{}
-	aggs = append(aggs, nt.Aggregation("age", "avg"))
+	aggs = append(aggs, nt.Aggregation(HistogramTypeBasic, "age", "avg"))
 
 	querySpec := QuerySpec{QueryParams: QueryParams{Filters: filters, Aggregations: aggs}}
 
@@ -212,7 +212,7 @@ func testStrRe(t *testing.T, tableName string) {
 	filters = append(filters, nt.StrFilter("age_str", "re", "^2"))
 
 	aggs := []Aggregation{}
-	aggs = append(aggs, nt.Aggregation("age", "avg"))
+	aggs = append(aggs, nt.Aggregation(HistogramTypeBasic, "age", "avg"))
 
 	groupings := []Grouping{}
 	groupings = append(groupings, nt.Grouping("age"))
@@ -243,7 +243,7 @@ func testSetIn(t *testing.T, tableName string) {
 	filters = append(filters, nt.SetFilter("age_set", "in", "20"))
 
 	aggs := []Aggregation{}
-	aggs = append(aggs, nt.Aggregation("age", "avg"))
+	aggs = append(aggs, nt.Aggregation(HistogramTypeBasic, "age", "avg"))
 
 	groupings := []Grouping{}
 	groupings = append(groupings, nt.Grouping("age"))
@@ -285,7 +285,7 @@ func testSetNin(t *testing.T, tableName string) {
 	filters = append(filters, nt.SetFilter("age_set", "nin", "20"))
 
 	aggs := []Aggregation{}
-	aggs = append(aggs, nt.Aggregation("age", "avg"))
+	aggs = append(aggs, nt.Aggregation(HistogramTypeBasic, "age", "avg"))
 
 	groupings := []Grouping{}
 	groupings = append(groupings, nt.Grouping("age"))

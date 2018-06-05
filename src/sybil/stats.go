@@ -19,7 +19,7 @@ import "math"
 // variance, then add all those variances together
 // SSB = sum of square between groups. Take each group's averages and calculate their
 // variance against the overall average.
-func (querySpec *QuerySpec) CalculateICC() map[string]float64 {
+func (querySpec *QuerySpec) CalculateICC(params HistogramParameters) map[string]float64 {
 	iccs := make(map[string]float64)
 	t := GetTable(*FLAGS.TABLE)
 	for _, agg := range querySpec.Aggregations {
@@ -59,8 +59,7 @@ func (querySpec *QuerySpec) CalculateICC() map[string]float64 {
 		info.Min = int64(minAvg)
 		info.Max = int64(maxAvg)
 
-		betweenGroups := newBasicHist(t, &info)
-		betweenGroups.TrackPercentiles()
+		betweenGroups := newBasicHist(params, t, &info, OPTS.WEIGHT_COL)
 
 		sumOfSquaresWithin := float64(0.0)
 		for _, res := range querySpec.Results {

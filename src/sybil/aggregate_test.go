@@ -34,7 +34,7 @@ func TestTableLoadRecords(t *testing.T) {
 	querySpec := newQuerySpec()
 
 	querySpec.Groups = append(querySpec.Groups, nt.Grouping("age_str"))
-	querySpec.Aggregations = append(querySpec.Aggregations, nt.Aggregation("age", "avg"))
+	querySpec.Aggregations = append(querySpec.Aggregations, nt.Aggregation(HistogramTypeBasic, "age", "avg"))
 
 	nt.MatchAndAggregate(querySpec)
 
@@ -83,7 +83,7 @@ func TestAveraging(t *testing.T) {
 	nt := saveAndReloadTable(t, tableName, blockCount)
 
 	querySpec := newQuerySpec()
-	querySpec.Aggregations = append(querySpec.Aggregations, nt.Aggregation("age", "avg"))
+	querySpec.Aggregations = append(querySpec.Aggregations, nt.Aggregation(HistogramTypeBasic, "age", "avg"))
 
 	nt.MatchAndAggregate(querySpec)
 
@@ -132,8 +132,9 @@ func TestHistograms(t *testing.T) {
 	FLAGS.OP = &HIST
 
 	querySpec := newQuerySpec()
+	querySpec.HistogramParameters.Type = HistogramTypeBasic
 	querySpec.Groups = append(querySpec.Groups, nt.Grouping("age_str"))
-	querySpec.Aggregations = append(querySpec.Aggregations, nt.Aggregation("age", "hist"))
+	querySpec.Aggregations = append(querySpec.Aggregations, nt.Aggregation(HistogramTypeBasic, "age", "hist"))
 
 	nt.MatchAndAggregate(querySpec)
 
@@ -154,7 +155,8 @@ func TestHistograms(t *testing.T) {
 	}
 
 	querySpec = newQuerySpec()
-	querySpec.Aggregations = append(querySpec.Aggregations, nt.Aggregation("age", "hist"))
+	querySpec.HistogramParameters.Type = HistogramTypeBasic
+	querySpec.Aggregations = append(querySpec.Aggregations, nt.Aggregation(HistogramTypeBasic, "age", "hist"))
 
 	nt.MatchAndAggregate(querySpec)
 
@@ -240,8 +242,9 @@ func TestTimeSeries(t *testing.T) {
 	hist := "hist"
 	FLAGS.OP = &hist
 	querySpec := newQuerySpec()
+	querySpec.HistogramParameters.Type = HistogramTypeBasic
 	querySpec.Groups = append(querySpec.Groups, nt.Grouping("age_str"))
-	querySpec.Aggregations = append(querySpec.Aggregations, nt.Aggregation("age", "hist"))
+	querySpec.Aggregations = append(querySpec.Aggregations, nt.Aggregation(HistogramTypeBasic, "age", "hist"))
 	querySpec.TimeBucket = int(time.Duration(60) * time.Minute)
 
 	nt.MatchAndAggregate(querySpec)
@@ -298,7 +301,7 @@ func TestOrderBy(t *testing.T) {
 	nt := saveAndReloadTable(t, tableName, blockCount)
 
 	querySpec := newQuerySpec()
-	querySpec.Aggregations = append(querySpec.Aggregations, nt.Aggregation("age", "avg"))
+	querySpec.Aggregations = append(querySpec.Aggregations, nt.Aggregation(HistogramTypeBasic, "age", "avg"))
 
 	nt.MatchAndAggregate(querySpec)
 

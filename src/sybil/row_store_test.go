@@ -41,7 +41,7 @@ func TestTableLoadRowRecords(t *testing.T) {
 	querySpec := newQuerySpec()
 
 	querySpec.Groups = append(querySpec.Groups, nt.Grouping("age_str"))
-	querySpec.Aggregations = append(querySpec.Aggregations, nt.Aggregation("age", "avg"))
+	querySpec.Aggregations = append(querySpec.Aggregations, nt.Aggregation(HistogramTypeBasic, "age", "avg"))
 
 	nt.MatchAndAggregate(querySpec)
 
