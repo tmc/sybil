@@ -36,6 +36,8 @@ type savedQueryParams struct {
 
 	Samples       bool `json:",omitempty"`
 	CachedQueries bool `json:",omitempty"`
+
+	HistogramParameters HistogramParameters `json:",omitempty"`
 }
 
 func Min(x, y int64) int64 {
@@ -103,24 +105,24 @@ func (qs *QuerySpec) NewResult() *Result {
 	return addedRecord
 }
 
-func (master_result *ResultMap) Combine(results *ResultMap) {
+func (master_result *ResultMap) Combine(params HistogramParameters, mergeTable *Table, results *ResultMap) {
 	for k, v := range *results {
 		mval, ok := (*master_result)[k]
 		if !ok {
 			(*master_result)[k] = v
 		} else {
-			mval.Combine(v)
+			mval.Combine(params, mergeTable, v)
 		}
 	}
 }
 
-func fullMergeHist(h, ph Histogram) Histogram {
+func fullMergeHist(params HistogramParameters, mergeTable *Table, h, ph Histogram) Histogram {
 	l1, r1 := h.Range()
 	l2, r2 := ph.Range()
 
 	info := IntInfo{Min: Min(l1, l2), Max: Max(r1, r2)}
 
-	nh := OPTS.MERGE_TABLE.NewHist(&info)
+	nh := mergeTable.NewHist(params, &info, h.IsWeighted())
 
 	for bucket, count := range h.GetIntBuckets() {
 		nh.AddWeightedValue(bucket, count)
@@ -134,7 +136,7 @@ func fullMergeHist(h, ph Histogram) Histogram {
 }
 
 // This does an in place combine of the next_result into this one...
-func (rs *Result) Combine(nextResult *Result) {
+func (rs *Result) Combine(params HistogramParameters, mergeTable *Table, nextResult *Result) {
 	if nextResult == nil {
 		return
 	}
@@ -158,7 +160,7 @@ func (rs *Result) Combine(nextResult *Result) {
 			ph, ok := rs.Hists[k]
 
 			if ok {
-				rs.Hists[k] = fullMergeHist(h, ph)
+				rs.Hists[k] = fullMergeHist(params, mergeTable, h, ph)
 			} else {
 				rs.Hists[k] = h
 			}
@@ -166,7 +168,7 @@ func (rs *Result) Combine(nextResult *Result) {
 		} else {
 			_, ok := rs.Hists[k]
 			if !ok {
-				nh := h.NewHist()
+				nh := h.NewHist(params)
 
 				nh.Combine(h)
 				rs.Hists[k] = nh
@@ -217,7 +219,7 @@ func (t *Table) Grouping(name string) Grouping {
 	return Grouping{name, colID}
 }
 
-func (t *Table) Aggregation(name string, op string) Aggregation {
+func (t *Table) Aggregation(histogramType HistogramType, name string, op string) Aggregation {
 	colID := t.getKeyID(name)
 
 	agg := Aggregation{Name: name, nameID: colID, Op: op}
@@ -228,12 +230,11 @@ func (t *Table) Aggregation(name string, op string) Aggregation {
 	if op == "hist" {
 		agg.opID = OP_HIST
 		agg.HistType = "basic"
-		if *FLAGS.LOG_HIST {
+		if histogramType == HistogramTypeLog {
 			agg.HistType = "multi"
-
 		}
 
-		if *FLAGS.HDR_HIST {
+		if histogramType == HistogramTypeHDR {
 			agg.HistType = "hdr"
 		}
 	}

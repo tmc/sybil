@@ -162,8 +162,14 @@ func RunQueryCmdLine() {
 	}
 
 	aggs := []sybil.Aggregation{}
+	histType := sybil.HistogramTypeBasic
+	if *sybil.FLAGS.LOG_HIST {
+		histType = sybil.HistogramTypeLog
+	} else if *sybil.FLAGS.HDR_HIST {
+		histType = sybil.HistogramTypeHDR
+	}
 	for _, agg := range ints {
-		aggs = append(aggs, t.Aggregation(agg, *sybil.FLAGS.OP))
+		aggs = append(aggs, t.Aggregation(histType, agg, *sybil.FLAGS.OP))
 	}
 
 	distincts := []sybil.Grouping{}

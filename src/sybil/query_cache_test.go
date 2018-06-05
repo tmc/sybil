@@ -45,7 +45,7 @@ func testCachedQueryFiles(t *testing.T, tableName string) {
 	filters = append(filters, nt.IntFilter("age", "lt", 20))
 
 	aggs := []Aggregation{}
-	aggs = append(aggs, nt.Aggregation("age", "hist"))
+	aggs = append(aggs, nt.Aggregation(HistogramTypeBasic, "age", "hist"))
 
 	querySpec := QuerySpec{Table: nt,
 		QueryParams: QueryParams{
@@ -87,7 +87,7 @@ func testCachedQueryFiles(t *testing.T, tableName string) {
 
 	// test that a new and slightly different query isnt cached for us
 	nt.LoadAndQueryRecords(&loadSpec, nil)
-	querySpec.Aggregations = append(aggs, nt.Aggregation("id", "hist"))
+	querySpec.Aggregations = append(aggs, nt.Aggregation(HistogramTypeBasic, "id", "hist"))
 	for _, b := range nt.BlockList {
 		loaded := querySpec.LoadCachedResults(b.Name)
 		if loaded {
@@ -103,7 +103,7 @@ func testCachedQueryConsistency(t *testing.T, tableName string) {
 	filters = append(filters, nt.IntFilter("age", "lt", 20))
 
 	aggs := []Aggregation{}
-	aggs = append(aggs, nt.Aggregation("age", "hist"))
+	aggs = append(aggs, nt.Aggregation(HistogramTypeBasic, "age", "hist"))
 
 	querySpec := QuerySpec{Table: nt,
 		QueryParams: QueryParams{
@@ -174,13 +174,16 @@ func testCachedBasicHist(t *testing.T, tableName string) {
 		filters := []Filter{}
 		filters = append(filters, nt.IntFilter("age", "lt", 20))
 		aggs := []Aggregation{}
-		aggs = append(aggs, nt.Aggregation("age", "hist"))
+		aggs = append(aggs, nt.Aggregation(HistogramTypeBasic, "age", "hist"))
 
 		querySpec := QuerySpec{Table: nt,
 			QueryParams: QueryParams{
 				Filters:       filters,
 				Aggregations:  aggs,
 				CachedQueries: true,
+				HistogramParameters: HistogramParameters{
+					Type: HistogramTypeBasic,
+				},
 			},
 		}
 
