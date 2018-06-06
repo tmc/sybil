@@ -23,11 +23,11 @@ type savedQueryResults struct {
 }
 
 type savedQueryParams struct {
-	Filters      []Filter              `json:",omitempty"`
-	Groups       []Grouping            `json:",omitempty"`
-	Aggregations []Aggregation         `json:",omitempty"`
-	Distincts    []Grouping            `json:",omitempty"` // list of columns we are creating a count distinct query on
-	StrReplace   map[string]StrReplace `json:",omitempty"`
+	Filters      []Filter        `json:",omitempty"`
+	Groups       []Grouping      `json:",omitempty"`
+	Aggregations []Aggregation   `json:",omitempty"`
+	Distincts    []Grouping      `json:",omitempty"` // list of columns we are creating a count distinct query on
+	StrReplace   StrReplacements `json:",omitempty"`
 
 	OrderBy    string `json:",omitempty"`
 	PruneBy    string `json:",omitempty"`

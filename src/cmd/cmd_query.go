@@ -206,6 +206,7 @@ func RunQueryCmdLine() {
 		Distincts:    distincts,
 
 		CachedQueries: *sybil.FLAGS.CACHED_QUERIES,
+		StrReplace:    sybil.BuildReplacements(*sybil.FLAGS.FIELD_SEPARATOR, *sybil.FLAGS.STR_REPLACE),
 	}
 
 	querySpec := sybil.QuerySpec{QueryParams: queryParams}

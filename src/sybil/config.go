@@ -108,6 +108,8 @@ type FlagDefs struct {
 	ANOVA_ICC *bool
 }
 
+type StrReplacements map[string]StrReplace
+
 type StrReplace struct {
 	Pattern string
 	Replace string
@@ -115,7 +117,6 @@ type StrReplace struct {
 
 type OptionDefs struct {
 	SAMPLES                 bool
-	STR_REPLACEMENTS        map[string]StrReplace
 	WEIGHT_COL              bool
 	WEIGHT_COL_ID           int16
 	DELTA_ENCODE_INT_VALUES bool
