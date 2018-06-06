@@ -116,7 +116,6 @@ type StrReplace struct {
 }
 
 type OptionDefs struct {
-	SAMPLES                 bool
 	WEIGHT_COL              bool
 	WEIGHT_COL_ID           int16
 	DELTA_ENCODE_INT_VALUES bool
@@ -137,7 +136,6 @@ var OPTS = OptionDefs{}
 var EMPTY = ""
 
 func setDefaults() {
-	OPTS.SAMPLES = false
 	OPTS.WEIGHT_COL = false
 	OPTS.WEIGHT_COL_ID = int16(0)
 	OPTS.DELTA_ENCODE_INT_VALUES = true
