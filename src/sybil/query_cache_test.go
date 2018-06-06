@@ -262,7 +262,7 @@ func TestCacheKeyGeneration(t *testing.T) {
 		},
 		{
 			"with-replacements",
-			QueryParams{StrReplace: map[string]StrReplace{
+			QueryParams{StrReplace: StrReplacements{
 				"a": StrReplace{},
 				"b": StrReplace{},
 			}},
