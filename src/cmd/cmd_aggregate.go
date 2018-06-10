@@ -23,7 +23,14 @@ func RunAggregateCmdLine() {
 	sybil.Debug("AGGREGATING DIRS", dirs)
 
 	printSpec := &sybil.PrintSpec{
+		ListTables: *sybil.FLAGS.LIST_TABLES,
+		PrintInfo:  *sybil.FLAGS.PRINT_INFO,
+		Samples:    *sybil.FLAGS.SAMPLES,
+
+		Op:            *sybil.FLAGS.OP,
+		Limit:         *sybil.FLAGS.LIMIT,
 		EncodeResults: *sybil.FLAGS.ENCODE_RESULTS,
+		JSON:          *sybil.FLAGS.JSON,
 	}
 	vt := sybil.VTable{}
 	vt.StitchResults(printSpec, dirs)
