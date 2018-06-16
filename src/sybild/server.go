@@ -1,15 +1,23 @@
 package sybild
 
 import (
-	"fmt"
-
 	context "golang.org/x/net/context"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
+	"github.com/davecgh/go-spew/spew"
+	"github.com/logv/sybil/src/sybil"
 	"github.com/logv/sybil/src/sybild/pb"
 )
 
+const defaultAddr = ":7000"
+
 // Server implements SybilServer
-type Server struct{}
+type Server struct {
+	DbDir string
+
+	db *sybil.Database
+}
 
 // statically assert that *Server implements SybilServer
 var _ pb.SybilServer = (*Server)(nil)
@@ -19,16 +27,18 @@ type ServerOption func(*Server)
 
 // NewServer returns a Server.
 func NewServer(opts ...ServerOption) (*Server, error) {
-	s := &Server{}
+	s := &Server{
+		DbDir: "./db",
+	}
 	for _, o := range opts {
 		o(s)
 	}
+	var err error
+	s.db, err = sybil.NewDatabase(s.DbDir)
+	if err != nil {
+		return nil, err
+	}
 	return s, nil
-}
-
-// Serve .
-func (s *Server) Serve() error {
-	return fmt.Errorf("not implemented")
 }
 
 // Ingest .
@@ -37,13 +47,18 @@ func (s *Server) Ingest(context.Context, *pb.IngestRequest) (*pb.IngestResponse,
 }
 
 // Query .
-func (s *Server) Query(context.Context, *pb.QueryRequest) (*pb.QueryResponse, error) {
-	panic("not implemented")
+func (s *Server) Query(ctx context.Context, r *pb.QueryRequest) (*pb.QueryResponse, error) {
+	spew.Dump(r)
+	// TODO QueryRequest to FLAGS (racily), loadSpec, querySpec
+	return nil, status.Error(codes.Unimplemented, "not implemented")
 }
 
 // ListTables .
 func (s *Server) ListTables(context.Context, *pb.ListTablesRequest) (*pb.ListTablesResponse, error) {
-	panic("not implemented")
+	tables, err := s.db.ListTables()
+	return &pb.ListTablesResponse{
+		Tables: tables,
+	}, err
 }
 
 // GetTable .
