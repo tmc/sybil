@@ -84,7 +84,7 @@ message QueryRequest {
   repeated string strs = 5;
   // The fields to group by.
   repeated string group_by = 6;
-  repeated string distinct_by = 7;
+  repeated string distinct_group_by = 7;
   // Field to sort by.
   string sort_by = 8;
   // Todo: prune_by
@@ -129,28 +129,11 @@ message HistogramOptions {
   int64 bucket_size = 2;
 }
 
-// QueryResult is the type of the query result.
-message QueryResult {
-  map<string, Histogram> histograms = 1;
-  int64 distinct = 2;
-
-  string group_by_key = 3;
-  int64 count = 4;
-  int64 samples = 5;
-}
-
 // Histogram describes a distribution of values.
 message Histogram {
   double mean = 1;
-  int64 max = 2;
-  int64 min = 3;
-  int64 total_count = 4;
-
   repeated int64 percentiles = 5;
-  map<int64, int64> int_buckets = 6;
-
-  int64 range_start = 7;
-  int64 range_end = 8;
+  repeated int64 buckets = 6;
   double std_deviation = 9;
 }
 
@@ -171,19 +154,28 @@ message Record {
   map<string, SetField> sets = 3;
 }
 
-// QueryResults
-message QueryResults {
-  QueryResult cumulative = 1;
-  ResultMap results = 2;
-  map<int64, ResultMap> time_results = 3;
-  int64 matched_count = 4;
-  repeated QueryResult sorted = 5;
-  repeated Record matched = 6;
+message FieldValue {
+  oneof value {
+    double avg = 1;
+    Histogram hist = 2;
+    string str = 3;
+  }
+}
+
+message QueryResult {
+  map <string, FieldValue> values = 1;
+  int64 count = 2;
+  int64 samples = 3;
+  int64 distinct = 4;
+  // if a time-series query, the time bucket for the result.
+  int64 time = 5;
 }
 
 // QueryResponse is the response type for a query.
 message QueryResponse {
-  QueryResults results = 1;
+  repeated QueryResult results = 1;
+  QueryResult cumulative = 2;
+  repeated Record samples = 3;
 }
 
 // ListTablesRequest requests the list of tables from sybil.
