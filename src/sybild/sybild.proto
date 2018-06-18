@@ -129,6 +129,7 @@ message HistogramOptions {
   int64 bucket_size = 2;
 }
 
+
 // Histogram describes a distribution of values.
 message Histogram {
   double mean = 1;
