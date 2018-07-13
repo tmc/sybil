@@ -2,17 +2,26 @@ package sybild
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
 
 	"github.com/davecgh/go-spew/spew"
+	"go.opencensus.io/trace"
+	context "golang.org/x/net/context"
 )
 
-func sybilIngest(tableName string, buf io.Reader) error {
+func sybilIngest(ctx context.Context, tableName string, buf io.Reader) error {
+	ctx, span := trace.StartSpan(ctx, "sybilIngest")
+	defer span.End()
 	const sybilBinary = "sybil"
 	var sybilFlags = []string{"ingest", "-table", tableName}
 	c := exec.Command(sybilBinary, sybilFlags...)
+	c.Env = append(os.Environ(),
+		fmt.Sprintf("TRACE_ID=%s", span.SpanContext().TraceID),
+		fmt.Sprintf("SPAN_ID=%s", span.SpanContext().SpanID),
+	)
 	c.Stderr = os.Stderr
 	si, err := c.StdinPipe()
 	if err != nil {

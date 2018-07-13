@@ -1,6 +1,9 @@
 package sybil
 
-import "sort"
+import (
+	"context"
+	"sort"
+)
 
 type TrimSpec struct {
 	MBLimit      int64 // size limit of DB in megabytes
@@ -21,7 +24,7 @@ func (t *Table) TrimTable(trimSpec *TrimSpec) ([]*TableBlock, error) {
 			continue
 		}
 
-		block, err := t.LoadBlockFromDir(b.Name, nil, false, nil)
+		block, err := t.LoadBlockFromDir(context.TODO(), b.Name, nil, false, nil)
 		if err != nil {
 			return nil, err
 		}

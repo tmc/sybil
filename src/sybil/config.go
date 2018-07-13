@@ -1,9 +1,10 @@
 package sybil
 
-import "flag"
-
-import "os"
-import "encoding/gob"
+import (
+	"encoding/gob"
+	"flag"
+	"os"
+)
 
 func init() {
 	setDefaults()

@@ -3,8 +3,6 @@ package sybil
 import (
 	"fmt"
 	"os"
-	"runtime"
-	"strings"
 	"testing"
 )
 
@@ -28,17 +26,7 @@ func setupTestVars(chunkSize int) {
 
 // getTestTableName uses the caller as the test name to help provide test case isolation.
 func getTestTableName(t *testing.T) string {
-	fpcs := make([]uintptr, 1)
-	n := runtime.Callers(2, fpcs)
-	if n == 0 {
-		return "default"
-	}
-	fun := runtime.FuncForPC(fpcs[0] - 1)
-	if fun == nil {
-		return "default"
-	}
-	parts := strings.Split(fun.Name(), ".")
-	return parts[len(parts)-1]
+	getCallerName(3)
 }
 
 func addRecords(tableName string, cb RecordSetupCB, blockCount int) []*Record {

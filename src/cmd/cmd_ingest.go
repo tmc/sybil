@@ -87,7 +87,7 @@ func ingestDictionary(r *sybil.Record, recordmap *Dictionary, prefix string) err
 
 var IMPORTED_COUNT = 0
 
-func importCsvRecords() error {
+func importCsvRecords(ctx context.Context) error {
 	// For importing CSV records, we need to validate the headers, then we just
 	// read in and fill out record fields!
 	scanner := csv.NewReader(os.Stdin)
@@ -98,7 +98,7 @@ func importCsvRecords() error {
 		return errors.Wrap(err, "error reading csv header")
 	}
 
-	t := sybil.GetTable(sybil.FLAGS.TABLE)
+	t := sybil.GetTable(sybil.FLAGS.TABLE).WithContext(ctx)
 
 	for {
 		fields, err := scanner.Read()
@@ -184,8 +184,9 @@ func jsonQuery(obj *interface{}, path []string) []interface{} {
 	return nil
 }
 
-func importJSONRecords(jsonPath string) error {
-	t := sybil.GetTable(sybil.FLAGS.TABLE)
+func importJSONRecords(ctx context.Context, jsonPath string) error {
+	// For importing CSV records, we need to validate the headers, then we just
+	t := sybil.GetTable(sybil.FLAGS.TABLE).WithContext(ctx)
 
 	path := strings.Split(jsonPath, ".")
 	sybil.Debug("PATH IS", path)
@@ -298,7 +299,10 @@ func runIngestCmdLine(flags *sybil.FlagDefs, digestFile string, ints string, csv
 		sybil.Debug("EXCLUDING COLUMN", k)
 	}
 
-	t := sybil.GetTable(flags.TABLE)
+	ctx, span := startInitialSpan("ingest")
+	defer span.End()
+
+	t := sybil.GetTable(flags.TABLE).WithContext(ctx)
 
 	// We have 5 tries to load table info, just in case the lock is held by
 	// someone else
@@ -325,9 +329,9 @@ func runIngestCmdLine(flags *sybil.FlagDefs, digestFile string, ints string, csv
 
 	var err error
 	if !csv {
-		err = importJSONRecords(jsonPath)
+		err = importJSONRecords(ctx, jsonPath)
 	} else {
-		err = importCsvRecords()
+		err = importCsvRecords(ctx)
 	}
 	if err != nil {
 		return err

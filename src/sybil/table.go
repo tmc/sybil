@@ -1,8 +1,11 @@
 package sybil
 
-import "sync"
-import "os"
-import "path"
+import (
+	"context"
+	"os"
+	"path"
+	"sync"
+)
 
 var ROW_STORE_BLOCK = "ROW_STORE"
 var NULL_BLOCK = "NULL_BLOCK"
@@ -22,6 +25,8 @@ type Table struct {
 
 	BlockInfoCache map[string]*SavedColumnInfo
 	NewBlockInfos  []string
+
+	ctx context.Context
 
 	// List of new records that haven't been saved to file yet
 	newRecords RecordList
@@ -58,6 +63,29 @@ func GetTable(name string) *Table {
 	return t
 }
 
+// WithContext returns a shallow copy of a Table with the context populated.
+func (t *Table) WithContext(ctx context.Context) *Table {
+	return &Table{
+		ctx:               ctx,
+		Name:              t.Name,
+		BlockList:         t.BlockList,
+		KeyTable:          t.KeyTable,
+		KeyTypes:          t.KeyTypes,
+		LastBlock:         t.LastBlock,
+		RowBlock:          t.RowBlock,
+		StrInfo:           t.StrInfo,
+		IntInfo:           t.IntInfo,
+		BlockInfoCache:    t.BlockInfoCache,
+		NewBlockInfos:     t.NewBlockInfos,
+		newRecords:        t.newRecords,
+		keyStringIDLookup: t.keyStringIDLookup,
+		valStringIDLookup: t.valStringIDLookup,
+		stringIDMu:        t.stringIDMu,
+		recordMu:          t.recordMu,
+		blockMu:           t.blockMu,
+	}
+}
+
 // UnloadTable de-registers a table.
 func UnloadTable(name string) {
 	tableMu.Lock()
@@ -83,6 +111,7 @@ func (t *Table) initDataStructures() {
 	t.LastBlock = newTableBlock()
 	t.LastBlock.RecordList = t.newRecords
 	t.initLocks()
+	t.ctx = context.TODO()
 }
 
 func (t *Table) initLocks() {

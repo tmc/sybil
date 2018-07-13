@@ -7,6 +7,8 @@ import (
 	"sort"
 
 	"github.com/logv/sybil/src/cmd"
+	"go.opencensus.io/exporter/jaeger"
+	"go.opencensus.io/trace"
 )
 
 var (
@@ -81,6 +83,22 @@ func printCommandHelp(msg string) {
 	log.Fatal(msg)
 }
 
+func setupTracing(serviceName string) func() {
+	je, err := jaeger.NewExporter(jaeger.Options{
+		Endpoint:    "http://localhost:14268",
+		ServiceName: serviceName,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	trace.RegisterExporter(je)
+
+	// For demoing purposes, always sample.
+	trace.ApplyConfig(trace.Config{DefaultSampler: trace.AlwaysSample()})
+
+	return je.Flush
+}
+
 func main() {
 	setupCommands()
 
@@ -96,6 +114,11 @@ func main() {
 		printCommandHelp(fmt.Sprintf("subcommand '%s' is invalid", firstArg))
 	}
 
+	serviceName := "sybil"
+	if firstArg == "serve" {
+		serviceName = "sybild"
+	}
+	flush := setupTracing(serviceName)
 	handler()
-
+	flush()
 }

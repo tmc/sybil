@@ -243,6 +243,8 @@ func fileLooksLikeBlock(v os.FileInfo) bool {
 }
 
 func (t *Table) LoadBlockCache() error {
+	_, done := t.trace()
+	defer done()
 	if err := t.GrabCacheLock(); err != nil {
 		return nil
 	}
@@ -368,6 +370,8 @@ func (t *Table) WriteBlockCache() error {
 }
 
 func (t *Table) LoadRecords(loadSpec *LoadSpec) (int, error) {
+	_, done := t.trace()
+	defer done()
 	t.LoadBlockCache()
 
 	return t.LoadAndQueryRecords(loadSpec, nil)

@@ -7,6 +7,7 @@ import (
 	"os"
 	"strings"
 
+	"go.opencensus.io/trace"
 	context "golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -38,6 +39,9 @@ func NewServer(opts ...ServerOption) (*Server, error) {
 }
 
 func (s *Server) Ingest(ctx context.Context, r *pb.IngestRequest) (*pb.IngestResponse, error) {
+	ctx, span := trace.StartSpan(ctx, "ingest")
+	defer span.End()
+
 	fmt.Println("ingest:")
 	json.NewEncoder(os.Stdout).Encode(r)
 
@@ -48,7 +52,7 @@ func (s *Server) Ingest(ctx context.Context, r *pb.IngestRequest) (*pb.IngestRes
 			return nil, err
 		}
 	}
-	err := sybilIngest(r.Dataset, buf)
+	err := sybilIngest(ctx, r.Dataset, buf)
 	if err != nil {
 		return nil, err
 	}
@@ -59,6 +63,9 @@ func (s *Server) Ingest(ctx context.Context, r *pb.IngestRequest) (*pb.IngestRes
 }
 
 func (s *Server) Query(ctx context.Context, r *pb.QueryRequest) (*pb.QueryResponse, error) {
+	ctx, span := trace.StartSpan(ctx, "Query")
+	defer span.End()
+
 	json.NewEncoder(os.Stdout).Encode(r)
 	flags := &sybil.FlagDefs{
 		OP:          string(opToSybilOp[r.Op]),
@@ -77,7 +84,7 @@ func (s *Server) Query(ctx context.Context, r *pb.QueryRequest) (*pb.QueryRespon
 
 		READ_INGESTION_LOG: r.ReadIngestionLog,
 	}
-	results, err := sybilQuery(flags)
+	results, err := sybilQuery(ctx, flags)
 	if err != nil {
 		return nil, err
 	}
@@ -88,7 +95,7 @@ func (s *Server) Query(ctx context.Context, r *pb.QueryRequest) (*pb.QueryRespon
 	}
 
 	querySpec := results.QuerySpec
-	resp := querySpecResultsToResults(r, querySpec.QueryResults)
+	resp := querySpecResultsToResults(ctx, r, querySpec.QueryResults)
 	return resp, nil
 }
 
@@ -99,7 +106,7 @@ func (s *Server) ListTables(ctx context.Context, r *pb.ListTablesRequest) (*pb.L
 		DIR:         s.DbDir,
 		LIST_TABLES: true,
 	}
-	results, err := sybilQuery(flags)
+	results, err := sybilQuery(ctx, flags)
 	if err != nil {
 		return nil, err
 	}
@@ -115,7 +122,7 @@ func (s *Server) GetTable(ctx context.Context, r *pb.GetTableRequest) (*pb.Table
 		PRINT_INFO: true,
 		TABLE:      r.Name,
 	}
-	results, err := sybilQuery(flags)
+	results, err := sybilQuery(ctx, flags)
 	if err != nil {
 		return nil, err
 	}

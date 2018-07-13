@@ -1,6 +1,7 @@
 package sybil
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -11,9 +12,12 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	"go.opencensus.io/trace"
 )
 
 func (t *Table) LoadAndQueryRecords(loadSpec *LoadSpec, querySpec *QuerySpec) (int, error) {
+	ctx, done := t.trace()
+	defer done()
 	waystart := time.Now()
 	Debug("LOADING", FLAGS.DIR, t.Name)
 
@@ -90,7 +94,10 @@ func (t *Table) LoadAndQueryRecords(loadSpec *LoadSpec, querySpec *QuerySpec) (i
 			thisBlock++
 
 			wg.Add(1)
-			go func() {
+			go func(ctx context.Context) {
+				ctx, span := trace.StartSpan(ctx, "LoadAndQueryRecords - file")
+				span.AddAttributes(trace.StringAttribute("filename", filename))
+				defer span.End()
 				defer wg.Done()
 
 				start := time.Now()
@@ -117,7 +124,7 @@ func (t *Table) LoadAndQueryRecords(loadSpec *LoadSpec, querySpec *QuerySpec) (i
 						replacements = querySpec.StrReplace
 					}
 					var err error
-					block, err = t.LoadBlockFromDir(filename, loadSpec, loadAll, replacements)
+					block, err = t.LoadBlockFromDir(ctx, filename, loadSpec, loadAll, replacements)
 					if block == nil || err != nil {
 						brokenMu.Lock()
 						brokenBlocks = append(brokenBlocks, brokenBlock{
@@ -207,7 +214,7 @@ func (t *Table) LoadAndQueryRecords(loadSpec *LoadSpec, querySpec *QuerySpec) (i
 					t.blockMu.Unlock()
 
 				}
-			}()
+			}(ctx)
 
 			if querySpec != nil && querySpec.Samples {
 				wg.Wait()

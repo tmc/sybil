@@ -3,6 +3,7 @@ package sybil
 import (
 	"bytes"
 	"compress/gzip"
+	"context"
 	"fmt"
 	"os"
 	"path"
@@ -11,6 +12,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	"go.opencensus.io/trace"
 )
 
 var GZIP_EXT = ".gz"
@@ -83,7 +85,7 @@ func (t *Table) FillPartialBlock() error {
 	// open up our last record block, see how full it is
 	delete(t.BlockInfoCache, filename)
 
-	block, err := t.LoadBlockFromDir(filename, nil, true /* LOAD ALL RECORDS */, nil)
+	block, err := t.LoadBlockFromDir(context.TODO(), filename, nil, true /* LOAD ALL RECORDS */, nil)
 	if err != nil {
 		return err
 	}
@@ -209,7 +211,9 @@ func (t *Table) LoadBlockInfo(dirname string) *SavedColumnInfo {
 
 // TODO: have this only pull the blocks into column format and not materialize
 // the columns immediately
-func (t *Table) LoadBlockFromDir(dirname string, loadSpec *LoadSpec, loadRecords bool, replacements map[string]StrReplace) (*TableBlock, error) {
+func (t *Table) LoadBlockFromDir(ctx context.Context, dirname string, loadSpec *LoadSpec, loadRecords bool, replacements map[string]StrReplace) (*TableBlock, error) {
+	ctx, done := t.trace(ctx)
+	defer done()
 	tb := newTableBlock()
 
 	tb.Name = dirname
@@ -239,6 +243,9 @@ func (t *Table) LoadBlockFromDir(dirname string, loadSpec *LoadSpec, loadRecords
 	size := int64(0)
 
 	for _, f := range files {
+		_, span := trace.StartSpan(ctx, "load file")
+		span.AddAttributes(trace.StringAttribute("file", f.Name()))
+		span.AddAttributes(trace.Int64Attribute("size", f.Size()))
 		fname := f.Name()
 		fsize := f.Size()
 		size += fsize
@@ -276,6 +283,7 @@ func (t *Table) LoadBlockFromDir(dirname string, loadSpec *LoadSpec, loadRecords
 		if err != nil {
 			return nil, errors.Wrap(err, fmt.Sprintf("issue unpacking %v", fname))
 		}
+		span.End()
 	}
 
 	tb.Size = size

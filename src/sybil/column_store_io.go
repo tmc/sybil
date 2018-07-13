@@ -2,6 +2,7 @@ package sybil
 
 import (
 	"bytes"
+	"context"
 	"encoding/gob"
 	"fmt"
 	"os"
@@ -475,7 +476,7 @@ func (tb *TableBlock) SaveToColumns(filename string) error {
 	// For now, we load info.db and check NumRecords inside it to prevent
 	// catastrophics, but we could load everything potentially
 	start = time.Now()
-	nb, err := tb.table.LoadBlockFromDir(partialname, nil, false, nil)
+	nb, err := tb.table.LoadBlockFromDir(context.TODO(), partialname, nil, false, nil)
 	if err != nil {
 		return err
 	}
@@ -487,7 +488,7 @@ func (tb *TableBlock) SaveToColumns(filename string) error {
 	}
 
 	if DEBUG_RECORD_CONSISTENCY {
-		nb, err = tb.table.LoadBlockFromDir(partialname, nil, true, nil)
+		nb, err = tb.table.LoadBlockFromDir(context.TODO(), partialname, nil, true, nil)
 		if err != nil {
 			return err
 		}

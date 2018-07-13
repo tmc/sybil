@@ -12,6 +12,8 @@ import (
 
 	"github.com/logv/sybil/src/sybil"
 	pb "github.com/logv/sybil/src/sybilpb"
+	"go.opencensus.io/trace"
+	context "golang.org/x/net/context"
 
 	google_protobuf "github.com/golang/protobuf/ptypes/struct"
 )
@@ -63,11 +65,18 @@ func setDefaults(flags *sybil.FlagDefs) {
 	flags.SKIP_OUTLIERS = defaultFlags.SKIP_OUTLIERS
 }
 
-func sybilQuery(flags *sybil.FlagDefs) (*sybil.NodeResults, error) {
+func sybilQuery(ctx context.Context, flags *sybil.FlagDefs) (*sybil.NodeResults, error) {
+	ctx, span := trace.StartSpan(ctx, "sybilQuery")
+	defer span.End()
+
 	setDefaults(flags)
 	const sybilBinary = "sybil"
 	var sybilFlags = []string{"query", "-decode-flags", "-encode-results"}
 	c := exec.Command(sybilBinary, sybilFlags...)
+	c.Env = append(os.Environ(),
+		fmt.Sprintf("TRACE_ID=%s", span.SpanContext().TraceID),
+		fmt.Sprintf("SPAN_ID=%s", span.SpanContext().SpanID),
+	)
 	c.Stderr = os.Stderr
 	si, err := c.StdinPipe()
 	if err != nil {
@@ -101,7 +110,9 @@ var opToSybilOp = map[pb.QueryOp]sybil.Op{
 	pb.QueryOp_HISTOGRAM:        sybil.OP_HIST,
 }
 
-func querySpecResultsToResults(qr *pb.QueryRequest, qresults sybil.QueryResults) *pb.QueryResponse {
+func querySpecResultsToResults(ctx context.Context, qr *pb.QueryRequest, qresults sybil.QueryResults) *pb.QueryResponse {
+	ctx, span := trace.StartSpan(ctx, "querySpecResultsToResults")
+	defer span.End()
 	if qr.Type == pb.QueryType_TIME_SERIES {
 		return querySpecResultsToTimeResults(qr, qresults)
 	}

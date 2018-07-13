@@ -1,6 +1,7 @@
 package sybil
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -101,7 +102,7 @@ func (l *DigestLock) Recover() error {
 func (l *BlockLock) Recover() error {
 	Debug("RECOVERING BLOCK LOCK", l.Name)
 	t := l.Table
-	tb, err := t.LoadBlockFromDir(l.Name, nil, true, nil)
+	tb, err := t.LoadBlockFromDir(context.TODO(), l.Name, nil, true, nil)
 	if err != nil {
 		return err
 	}

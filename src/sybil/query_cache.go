@@ -1,13 +1,14 @@
 package sybil
 
-import "encoding/gob"
-
-import "bytes"
-import "fmt"
-import "path"
-import "io/ioutil"
-import "os"
-import "compress/gzip"
+import (
+	"bytes"
+	"compress/gzip"
+	"encoding/gob"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"path"
+)
 
 func init() {
 	registerTypesForQueryCache()

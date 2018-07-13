@@ -28,7 +28,10 @@ func runDigestCmdLine(flags *sybil.FlagDefs) error {
 		profile := sybil.RUN_PROFILER()
 		defer profile.Start().Stop()
 	}
-	t := sybil.GetTable(flags.TABLE)
+	ctx, span := startInitialSpan("digest")
+	defer span.End()
+
+	t := sybil.GetTable(flags.TABLE).WithContext(ctx)
 	if err := t.LoadTableInfo(); err != nil {
 		return err
 	}

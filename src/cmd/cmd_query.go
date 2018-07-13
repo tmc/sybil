@@ -93,6 +93,9 @@ func runQueryCmdLine(flags *sybil.FlagDefs) error {
 		sybil.DecodeFlags()
 	}
 
+	ctx, span := startInitialSpan("query")
+	defer span.End()
+
 	if flags.ENCODE_FLAGS {
 		sybil.Debug("PRINTING ENCODED FLAGS")
 		sybil.EncodeFlags()
@@ -120,7 +123,7 @@ func runQueryCmdLine(flags *sybil.FlagDefs) error {
 		return nil
 	}
 
-	t := sybil.GetTable(table)
+	t := sybil.GetTable(table).WithContext(ctx)
 	if t.IsNotExist() {
 		return fmt.Errorf("table %v does not exist in %v", flags.TABLE, flags.DIR)
 	}
@@ -357,7 +360,7 @@ func runQueryCmdLine(flags *sybil.FlagDefs) error {
 	}
 
 	if flags.PRINT_INFO {
-		t := sybil.GetTable(table)
+		t := sybil.GetTable(table).WithContext(ctx)
 		flags.LOAD_AND_QUERY = false
 
 		if _, err := t.LoadRecords(nil); err != nil {
