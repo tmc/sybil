@@ -12,7 +12,6 @@ import (
 	"github.com/logv/sybil/src/sybild"
 	pb "github.com/logv/sybil/src/sybilpb"
 	"github.com/pkg/errors"
-	"go.opencensus.io/examples/exporter"
 	"go.opencensus.io/plugin/ocgrpc"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/zpages"
@@ -39,10 +38,6 @@ func runServeCmdLine(flags *sybil.FlagDefs) error {
 		zpages.Handle(mux, "/debug")
 		log.Fatal(http.ListenAndServe(defaultDebugListenAddr, mux))
 	}()
-
-	// Register stats and trace exporters to export
-	// the collected data.
-	view.RegisterExporter(&exporter.PrintExporter{})
 
 	_, span := startInitialSpan("serve")
 	span.End() // immediate stop span as a long running one won't be very interesting

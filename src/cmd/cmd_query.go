@@ -9,12 +9,11 @@ import (
 	"strings"
 	"time"
 
-	"golang.org/x/net/context"
-
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/logv/sybil/src/sybil"
 	pb "github.com/logv/sybil/src/sybilpb"
 	"github.com/pkg/errors"
+	"go.opencensus.io/plugin/ocgrpc"
 	"google.golang.org/grpc"
 )
 
@@ -398,10 +397,12 @@ func splitFilters(s, sep, fSep string) []*pb.QueryFilter {
 }
 
 func runQueryGRPC(flags *sybil.FlagDefs) error {
-	ctx := context.Background()
+	ctx, span := startInitialSpan("query (remote)")
+	defer span.End()
 	opts := []grpc.DialOption{
 		// todo
 		grpc.WithInsecure(),
+		grpc.WithStatsHandler(&ocgrpc.ClientHandler{}),
 	}
 	conn, err := grpc.Dial(flags.DIAL, opts...)
 	if err != nil {

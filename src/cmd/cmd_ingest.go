@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes/struct"
+	"go.opencensus.io/plugin/ocgrpc"
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/logv/sybil/src/sybil"
@@ -344,6 +345,7 @@ func runIngestGRPC(flags *sybil.FlagDefs, r io.Reader) error {
 	opts := []grpc.DialOption{
 		// todo
 		grpc.WithInsecure(),
+		grpc.WithStatsHandler(&ocgrpc.ClientHandler{}),
 	}
 	conn, err := grpc.Dial(flags.DIAL, opts...)
 	if err != nil {
